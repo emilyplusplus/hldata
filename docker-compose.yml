@@ -1,7 +1,7 @@
 version: '3'
 services:
-  mongo:
-    container_name: mongo
+  mongodb:
+    container_name: mongodb
     image: "mongo"
     volumes:
       - ./data:/data/db
@@ -12,7 +12,10 @@ services:
     build: .
     ports:
      - "49160:8080"
-    command: npm start
+    volumes:
+      - .:/usr/app/
+      - /usr/app/node_modules
+    command: npm run start
     links:
-     - "mongo"
+     - "mongodb"
   

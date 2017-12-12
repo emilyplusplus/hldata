@@ -1,0 +1,13 @@
+{
+    "name": "hldata",
+    "version": "1.0.0",
+    "description": "",
+    "author": "Emily Carlsen",
+    "main": "app.js",
+    "scripts": {
+      "start": "node ."
+    },
+    "dependencies": {
+      "express": "^4.16.2"
+    }
+  }

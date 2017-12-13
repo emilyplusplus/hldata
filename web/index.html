@@ -3,10 +3,10 @@
     <meta charset="utf-8">
     <title>Climate</title>
     <script type="text/javascript" src="moment.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.bundle.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.js"></script>
 </head>
 <body>
-    <canvas id="myChart" width="600" height="600" style="max-height:600px;max-width:600px;"></canvas>
+    <canvas id="myChart" width="900" height="600" style="max-height:600px;max-width:900px;"></canvas>
     <script>
         let url = 'http://localhost:8080/records'
 
@@ -15,6 +15,32 @@
         let lux = []
         let temp = []
 
+        setInterval(() => {
+            fetch(url).then(r => r.json())
+            .then(data => {
+                records = data; 
+                if(records.length == lux.length) return;
+                console.log(records); 
+
+                for(let i = lux.length; i < records.length; i++){
+                    lux.push({
+                        t: moment(records[i].time),
+                        y: records[i].lux
+                    })
+                    temp.push({
+                        t: moment(records[i].time),
+                        y: records[i].temp
+                    })
+                }
+
+                lineChartData.datasets[0].data = temp
+                lineChartData.datasets[1].data = lux
+
+                window.myLine.update();
+            })
+            .catch(e => console.log("Booo"))
+        },1000)
+
         fetch(url).then(r => r.json())
             .then(data => {
                 records = data; 
@@ -22,11 +48,11 @@
 
                 for(let i = 0; i < records.length; i++){
                     lux.push({
-                        x: records[i].time,
+                        t: moment(records[i].time),
                         y: records[i].lux
                     })
                     temp.push({
-                        x: records[i].time,
+                        t: moment(records[i].time),
                         y: records[i].temp
                     })
                 }
@@ -77,6 +103,12 @@
                     text:'Climate'
                 },
                 scales: {
+                    xAxes: [{
+                        type: "time",
+                        time: {
+                            unit: 'hour'
+                        }
+                    }],
                     yAxes: [{
                         type: "linear", // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
                         display: true,

@@ -2,55 +2,102 @@
 <head>
     <meta charset="utf-8">
     <title>Climate</title>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+    <script type="text/javascript" src="moment.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.bundle.js"></script>
 </head>
 <body>
     <canvas id="myChart" width="600" height="600" style="max-height:600px;max-width:600px;"></canvas>
     <script>
         let url = 'http://localhost:8080/records'
 
+        let records = []
+
+        let lux = []
+        let temp = []
+
         fetch(url).then(r => r.json())
-            .then(data => console.log(data))
+            .then(data => {
+                records = data; 
+                console.log(records); 
+
+                for(let i = 0; i < records.length; i++){
+                    lux.push({
+                        x: records[i].time,
+                        y: records[i].lux
+                    })
+                    temp.push({
+                        x: records[i].time,
+                        y: records[i].temp
+                    })
+                }
+
+                load();
+            })
             .catch(e => console.log("Booo"))
 
+            window.chartColors = {
+	red: 'rgb(255, 99, 132)',
+	orange: 'rgb(255, 159, 64)',
+	yellow: 'rgb(255, 205, 86)',
+	green: 'rgb(75, 192, 192)',
+	blue: 'rgb(54, 162, 235)',
+	purple: 'rgb(153, 102, 255)',
+	grey: 'rgb(201, 203, 207)'
+};
 
-        var ctx = document.getElementById("myChart");
-        var myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
-                datasets: [{
-                    label: '# of Votes',
-                    data: [12, 19, 3, 5, 2, 3],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255,99,132,1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
+        
+    var lineChartData = {
+        datasets: [{
+            label: "Temperature [°F]",
+            borderColor: window.chartColors.red,
+            backgroundColor: window.chartColors.red,
+            fill: false,
+            data: temp,
+            yAxisID: "temp",
+        }, {
+            label: "Lux (Illuminance)",
+            borderColor: window.chartColors.blue,
+            backgroundColor: window.chartColors.blue,
+            fill: false,
+            data: lux,
+            yAxisID: "lux"
+        }]
+    };
+
+    let load = function() {
+        var ctx = document.getElementById("myChart").getContext("2d");
+        window.myLine = Chart.Line(ctx, {
+            data: lineChartData,
             options: {
+                responsive: true,
+                hoverMode: 'index',
+                stacked: false,
+                title:{
+                    display: true,
+                    text:'Climate'
+                },
                 scales: {
                     yAxes: [{
-                        ticks: {
-                            beginAtZero:true
-                        }
-                    }]
+                        type: "linear", // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+                        display: true,
+                        position: "left",
+                        id: "temp",
+                    }, {
+                        type: "linear", // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+                        display: true,
+                        position: "right",
+                        id: "lux",
+
+                        // grid line settings
+                        gridLines: {
+                            drawOnChartArea: false, // only want the grid lines for one axis to show up
+                        },
+                    }],
                 }
             }
         });
+    };
+    
     </script>
 </body>
 </html>

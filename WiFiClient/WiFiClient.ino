@@ -1,9 +1,14 @@
+#include <Wire.h>
 #include <ESP8266WiFi.h>
+#include <stdio.h>
 
 const char* ssid     = "Ariem Eowyn";
-const char* password = "D1l.airport";
+const char* password = "****";
 
 void setup() {
+  Wire.setClock(100000);
+  Wire.setClockStretchLimit(40000);    // in µs
+  Wire.begin();
   Serial.begin(115200);
   delay(10);
 
@@ -28,6 +33,37 @@ void setup() {
 }
 
 void loop() {
+  int i = 0;
+  char message[20];
+
+  Wire.requestFrom(8,20);
+
+  while (Wire.available()) {
+    message[i] = (char)Wire.read();
+    i++;
+  }
+
+  Serial.println(message);
+
+  char temp[10] = {0,0,0,0,0,0,0,0,0,0};
+  char lux[10] = {0,0,0,0,0,0,0,0,0,0};
+
+  char *found;
+
+  found = strchr(message, ',');
+  strncpy(temp,message,found-message);
+  strcpy(lux,found+1);
+  
+  Serial.println(found-message);
+  Serial.println(temp);
+  Serial.println(lux);
+
+  float t = atof(temp);
+  float l = atof(lux);
+
+  Serial.println(t);
+  Serial.println(l);
+  
   // Use WiFiClient class to create TCP connections
   WiFiClient client;
   const int httpPort = 8080;
@@ -46,10 +82,10 @@ void loop() {
   client.print(String("POST /record HTTP/1.1\r\n") +
                "Host: 10.0.0.2:8080\r\n" + 
                "Cache-Control: no-cache\r\n" + 
-                "Content-Length: 23\r\n"+
+                "Content-Length: " + (9 + strlen(temp) + 8 + strlen(lux) + 1) + "\r\n"+
                 "Accept: */*\r\n"+
                "Content-Type: application/json\r\n\r\n" +
-               "{\"temp\": " + (random(10) + 60) + ",\"lux\": " + (random(500) + 200) + "}\r\n");
+               "{\"temp\": " + (t) + ",\"lux\": " + (l) + "}\r\n");
   unsigned long timeout = millis();
   while (client.available() == 0) {
     if (millis() - timeout > 5000) {
@@ -67,7 +103,7 @@ void loop() {
   
   Serial.println();
   Serial.println("closing connection");
-
-  delay(60000);
+  
+  delay(30*1000);
 }
 

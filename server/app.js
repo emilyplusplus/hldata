@@ -3,7 +3,7 @@ const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 var cors = require('cors');
 
-let db = mongoose.connect('mongodb://localhost/climate')
+let db = mongoose.connect('mongodb://database/climate')
 
 let schema = mongoose.Schema({
   temp: Number,

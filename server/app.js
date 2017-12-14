@@ -1,9 +1,9 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
-var cors = require('cors');
+var cors = require('cors')
 
-let db = mongoose.connect('mongodb://database/climate')
+let db = mongoose.connect('mongodb://database/database')
 
 let schema = mongoose.Schema({
   temp: Number,

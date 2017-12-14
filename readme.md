@@ -1,4 +1,4 @@
-#Realtime Embedded Datalogger Visualization
+# Realtime Embedded Datalogger Visualization
 
 This project has three main elements:
 

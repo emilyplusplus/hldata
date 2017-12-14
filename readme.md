@@ -1,5 +1,7 @@
 # Realtime Embedded Datalogger Visualization
 
+*Realtime data logging application that flows from embedded device, to cloud/server/database, to output visualization. Uses modern technology to achieve data analytics quickly and for low cost.*
+
 This project has three main elements:
 
 * **Logger**: An embedded hardware device that operates wirelessly and on battery, which periodically sends data to a server running in the cloud. In the event that internet connectivity is not available, it stores data locally until a time at which it can ship data up to a specified server
